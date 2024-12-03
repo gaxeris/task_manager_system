@@ -12,6 +12,7 @@ django-rest-framework = "^0.1.0"
 django-pytest = "^0.2.0"
 pytest = "^8.3.3"
 celery = "^5.4.0"
+python-dotenv = "^1.0.1"
 
 
 [build-system]
