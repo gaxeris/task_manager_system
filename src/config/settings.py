@@ -137,3 +137,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # Celery settings
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://localhost:6379/0")
+
+EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND")
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
