@@ -9,12 +9,17 @@ def notify_about_task_by_email(task_id):
     task = Task.objects.get(id=task_id)
     task_title = task.title
     task_deadline = str(task.deadline)
-
+    task_status = str(task.status)
+    task_priority = str(task.priority)
     target = task.assigned_to
     target_name = target.username
 
-    subject = f"Task {task_title} is assigned"
-    message = f"Greetings, {target_name}. \n\nYou are assigned to '{task_title}'. Due date is {task_deadline}"
+    subject = f"Task {task_title} that has {task_priority} priority is assigned"
+    message = (
+        f"Greetings, {target_name}. \n\n"
+        f"The task '{task_title}' status you are assigned to is set to {task_status}."
+        f"Its priority is {task_priority}. Due date is {task_deadline}"
+    )
 
     target.email_user(
         subject=subject,
