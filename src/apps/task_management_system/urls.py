@@ -8,17 +8,21 @@ from .views import (
 
 urlpatterns = [
     # Project URLs
-    path("projects/", ProjectListCreateView.as_view(), name="project_list_create"),
+    path("projects/", ProjectListCreateView.as_view(), name="project-list"),
     path(
         "projects/<int:pk>/",
         ProjectRetrieveUpdateDestroyView.as_view(),
-        name="project_detail_update_delete",
+        name="project-detail",
     ),
-    # Task URLs
-    path("tasks/", TaskListCreateView.as_view(), name="task_list_create"),
+    # Nested Task URLs
     path(
-        "tasks/<int:pk>/",
+        "projects/<int:project_id>/tasks/",
+        TaskListCreateView.as_view(),
+        name="task-list",
+    ),
+    path(
+        "projects/<int:project_id>/tasks/<int:pk>/",
         TaskRetrieveUpdateDestroyView.as_view(),
-        name="task_detail_update_delete",
+        name="task-detail",
     ),
 ]
