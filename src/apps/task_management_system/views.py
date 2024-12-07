@@ -1,7 +1,9 @@
 # Create your views here.
 from rest_framework.generics import get_object_or_404
 from rest_framework import generics
+from rest_framework import filters
 from rest_framework.permissions import IsAuthenticated
+
 
 from .models import Project, Task
 from .serializers import ProjectSerializer, TaskSerializer
@@ -29,6 +31,9 @@ class TaskListCreateView(generics.ListCreateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    ordering_fields = ["priority", "status", "deadline"]
+    search_fields = ["priority", "status", "assigned_to", "assigned_to_str"]
 
     def get_queryset(self):
         if self.kwargs.get("project_id"):
@@ -45,7 +50,7 @@ class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
-    
+
     def get_object(self):
         if self.kwargs.get("project_id"):
             return get_object_or_404(
@@ -54,7 +59,7 @@ class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
                 pk=self.kwargs.get("pk"),
             )
         return get_object_or_404(self.get_queryset(), pk=self.kwargs.get("pk"))
-      
+
     def perform_update(self, serializer):
         instance = serializer.save()
         task_id = instance.id

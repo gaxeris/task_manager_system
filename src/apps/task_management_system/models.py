@@ -16,21 +16,21 @@ class Project(models.Model):
 
 class Task(models.Model):
     PRIORITY_CHOICES = [
-        ("L", "Low"),
-        ("M", "Medium"),
-        ("H", "High"),
+        (1, "Low"),
+        (2, "Medium"),
+        (3, "High"),
     ]
 
     STATUS_CHOICES = [
-        ("P", "Pending"),
-        ("IP", "In Progress"),
-        ("C", "Completed"),
+        (1, "Pending"),
+        (2, "In Progress"),
+        (3, "Completed"),
     ]
 
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
-    priority = models.CharField(max_length=1, choices=PRIORITY_CHOICES, default="M")
-    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default="P")
+    priority = models.IntegerField(choices=PRIORITY_CHOICES, default=2)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=1)
     deadline = models.DateField(blank=True, null=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="tasks")
     assigned_to = models.ForeignKey(
