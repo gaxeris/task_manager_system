@@ -10,6 +10,9 @@ class UserShortSerializer(serializers.ModelSerializer):
 
 
 class TaskShortSerializer(serializers.ModelSerializer):
+    priority = serializers.CharField(source="get_priority_display")
+    status = serializers.CharField(source="get_status_display")
+
     class Meta:
         model = Task
         fields = ["id", "title", "priority", "status"]
@@ -34,6 +37,9 @@ class TaskSerializer(serializers.ModelSerializer):
         source="assigned_to.username", read_only=True
     )
 
+    priority_str = serializers.CharField(source="get_priority_display", read_only=True)
+    status_str = serializers.CharField(source="get_status_display", read_only=True)
+
     class Meta:
         model = Task
         fields = [
@@ -41,6 +47,8 @@ class TaskSerializer(serializers.ModelSerializer):
             "title",
             "description",
             "priority",
+            "priority_str",
+            "status_str",
             "status",
             "deadline",
             "project",
