@@ -1,8 +1,10 @@
 # Create your views here.
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+
 from .models import Project, Task
 from .serializers import ProjectSerializer, TaskSerializer
+from .tasks import notify_about_task_by_email
 
 
 # Project Views
@@ -28,10 +30,17 @@ class TaskListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
+        instance = serializer.save(created_by=self.request.user)
+        task_id = instance.id
+        notify_about_task_by_email.delay(task_id)
 
 
 class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        task_id = instance.id
+        notify_about_task_by_email.delay(task_id)
