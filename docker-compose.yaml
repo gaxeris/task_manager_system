@@ -1,0 +1,118 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    #restart: unless-stopped
+    ports:
+      - '8000:8000'
+    volumes:
+      - static_data:/usr/src/app/static
+      - media_data:/usr/src/app/media
+    environment:
+      # postgresql env variables
+      - DATABASE_NAME=django_db
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_HOST=pg_database
+      - DATABASE_PORT=5432
+      # celery env variables
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
+      # email backend variables
+      - EMAIL_BACKEND=${EMAIL_BACKEND}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      # entrypoint env variables
+      - DJANGO_SUPERUSER_USERNAME = ${DJANGO_SUPERUSER_USERNAME}
+      - DJANGO_SUPERUSER_PASSWORD = ${DJANGO_SUPERUSER_PASSWORD}
+      - DJANGO_SUPERUSER_EMAIL = ${DJANGO_SUPERUSER_EMAIL}  
+   # command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
+    entrypoint: /usr/src/app/entrypoint.sh
+    networks:
+      - backend_main
+    depends_on:
+      - pg_database
+      - redis
+
+  pg_database:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+     - DATABASE_PORT=5435
+     - POSTGRES_DB=django_db
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=postgres
+    ports:
+     - '5435:5432'
+    networks:
+     - backend_main
+    volumes:
+     - pg_data:/var/lib/postgresql/data
+
+  nginx:
+    build: ./src/nginx
+    restart: unless-stopped
+    volumes:
+      - static_data:/usr/src/app/static
+      - media_data:/usr/src/app/media
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - backend_main
+
+  celery:
+    build: .
+    command: poetry run celery --app=config worker --loglevel=info 
+    restart: unless-stopped
+    volumes:
+      - static_data:/usr/src/app/static
+      - media_data:/usr/src/app/media
+    environment:
+      # postgresql env variables
+      - DATABASE_NAME=django_db
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=postgres
+      - DATABASE_HOST=pg_database
+      - DATABASE_PORT=5432
+      # celery env variables
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
+      # email backend variables
+      - EMAIL_BACKEND=${EMAIL_BACKEND}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      # entrypoint env variables
+      - DJANGO_SUPERUSER_USERNAME = ${DJANGO_SUPERUSER_USERNAME}
+      - DJANGO_SUPERUSER_PASSWORD = ${DJANGO_SUPERUSER_PASSWORD}
+      - DJANGO_SUPERUSER_EMAIL = ${DJANGO_SUPERUSER_EMAIL}  
+    networks:
+      - backend_main
+    depends_on:
+      - backend
+      - redis
+      - pg_database
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - 6379:6379
+    restart: unless-stopped
+    networks:
+      - backend_main
+    volumes:
+      - redis_data:/data
+
+
+volumes:
+  pg_data:
+  static_data:
+  media_data:
+  redis_data:
+
+networks:
+ backend_main:
