@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "drf_spectacular",
+    "djangoviz",
     "apps.users.apps.UsersConfig",
     "apps.task_management_system.apps.TaskManagementSystemConfig",
 ]
