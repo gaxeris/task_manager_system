@@ -45,12 +45,4 @@ class Task(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return (
-            self.project.name
-            + "|"
-            + self.title
-            + " | "
-            + self.get_status_display()
-            + " | "
-            + self.assigned_to.username
-        )
+        return self.title
