@@ -1,8 +1,6 @@
 from django.db import models
 from django.conf import settings
 
-from .tasks import notify_about_task_by_email
-
 
 class Project(models.Model):
     name = models.CharField(max_length=100)
@@ -48,7 +46,3 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
-
-    def save(self, *args, **kwargs):
-        notify_about_task_by_email.delay(self.pk)
-        super(Task, self).save(*args, **kwargs)

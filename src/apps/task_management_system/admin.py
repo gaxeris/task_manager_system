@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from apps.task_management_system.models import Project, Task
+from .models import Project, Task
+from .tasks import notify_about_task_by_email
 
 
 class ProjectAdmin(admin.ModelAdmin):
@@ -39,6 +40,10 @@ class TaskAdmin(admin.ModelAdmin):
     @admin.display(empty_value="???")
     def view_priority(self, obj):
         return str(obj.get_priority_display())
+
+    def save_model(self, request, obj, form, change):
+        notify_about_task_by_email.delay(obj.id)
+        super().save_model(request, obj, form, change)
 
 
 # Register your models here.
