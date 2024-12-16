@@ -11,7 +11,7 @@ from .tasks import notify_about_task_by_email
 
 
 # Project Views
-class ProjectListCreateView(generics.ListCreateAPIView):
+class ProjectListCreateAPIView(generics.ListCreateAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
@@ -20,14 +20,14 @@ class ProjectListCreateView(generics.ListCreateAPIView):
         serializer.save(created_by=self.request.user)
 
 
-class ProjectRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+class ProjectDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
 
 
 # Task Views
-class TaskListCreateView(generics.ListCreateAPIView):
+class TaskListCreateAPIView(generics.ListCreateAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
@@ -43,10 +43,10 @@ class TaskListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         instance = serializer.save(created_by=self.request.user)
         task_id = instance.id
-        notify_about_task_by_email.delay(task_id)
+        # notify_about_task_by_email.delay(task_id)
 
 
-class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+class TaskDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated]
@@ -63,4 +63,4 @@ class TaskRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer):
         instance = serializer.save()
         task_id = instance.id
-        notify_about_task_by_email.delay(task_id)
+        # notify_about_task_by_email.delay(task_id)
