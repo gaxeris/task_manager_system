@@ -43,7 +43,7 @@ class TaskListCreateAPIView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         instance = serializer.save(created_by=self.request.user)
         task_id = instance.id
-        notify_about_task_by_email.delay(task_id)
+        # notify_about_task_by_email.delay(task_id)
 
 
 class TaskDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -63,4 +63,4 @@ class TaskDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     def perform_update(self, serializer):
         instance = serializer.save()
         task_id = instance.id
-        notify_about_task_by_email.delay(task_id)
+        # notify_about_task_by_email.delay(task_id)
