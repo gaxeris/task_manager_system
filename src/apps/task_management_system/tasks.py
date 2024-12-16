@@ -1,11 +1,10 @@
 from celery import shared_task
-from django.core.mail import send_mail
-
-from apps.task_management_system.models import Task
 
 
 @shared_task
 def notify_about_task_by_email(task_id):
+    from .models import Task
+
     task = Task.objects.get(id=task_id)
     task_title = task.title
     task_deadline = str(task.deadline)
